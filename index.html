@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Weight & Mass Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .converter-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            text-align: left;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1.2em;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #ff9a9e;
+            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1);
+        }
+
+        .unit-selection {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+
+        .unit-group {
+            flex: 1;
+        }
+
+        .unit-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        .unit-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .unit-select:focus {
+            outline: none;
+            border-color: #ff9a9e;
+            box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.1);
+        }
+
+        .convert-btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #ff9a9e, #fecfef);
+            color: white;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        .swap-btn {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #333;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+        }
+
+        .swap-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .result-container {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .result-text {
+            font-size: 1.4em;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .conversion-arrow {
+            display: inline-block;
+            margin: 0 10px;
+            font-size: 1.2em;
+            color: #ff9a9e;
+        }
+
+        .formula-hint {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .conversion-reference {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .reference-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .reference-group {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .reference-group h4 {
+            color: #ff9a9e;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .reference-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .reference-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .reference-unit {
+            color: #666;
+        }
+
+        @media (max-width: 480px) {
+            .converter-container {
+                padding: 30px 20px;
+            }
+            
+            .title {
+                font-size: 2em;
+            }
+            
+            .unit-selection {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .swap-btn {
+                margin: 10px 0;
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="converter-container">
+        <h1 class="title">⚖️ Universal Weight & Mass Converter</h1>
+        <p class="subtitle">Convert between any weight and mass units instantly</p>
+        
+        <div class="input-group">
+            <label class="input-label" for="weight">Enter Weight/Mass:</label>
+            <input 
+                type="number" 
+                id="weight" 
+                class="number-input" 
+                placeholder="Enter a number..."
+                step="any"
+                min="0"
+            >
+        </div>
+        
+        <div class="unit-selection">
+            <div class="unit-group">
+                <label class="unit-label" for="fromUnit">From:</label>
+                <select id="fromUnit" class="unit-select">
+                    <option value="mg">Milligrams (mg)</option>
+                    <option value="g">Grams (g)</option>
+                    <option value="kg" selected>Kilograms (kg)</option>
+                    <option value="oz">Ounces (oz)</option>
+                    <option value="lb">Pounds (lb)</option>
+                    <option value="st">Stone (st)</option>
+                    <option value="t">Metric Tons (t)</option>
+                    <option value="ton">US Tons (ton)</option>
+                </select>
+            </div>
+            
+            <button class="swap-btn" onclick="swapUnits()" title="Swap units">⇄</button>
+            
+            <div class="unit-group">
+                <label class="unit-label" for="toUnit">To:</label>
+                <select id="toUnit" class="unit-select">
+                    <option value="mg">Milligrams (mg)</option>
+                    <option value="g">Grams (g)</option>
+                    <option value="kg">Kilograms (kg)</option>
+                    <option value="oz">Ounces (oz)</option>
+                    <option value="lb" selected>Pounds (lb)</option>
+                    <option value="st">Stone (st)</option>
+                    <option value="t">Metric Tons (t)</option>
+                    <option value="ton">US Tons (ton)</option>
+                </select>
+            </div>
+        </div>
+        
+        <button class="convert-btn" onclick="convertWeight()">
+            Convert Weight/Mass
+        </button>
+        
+        <div class="result-container">
+            <div class="result-text" id="result">
+                Select units and enter a number to get started!
+            </div>
+        </div>
+        
+        <div class="formula-hint" id="formula">
+            💡 Tip: Enter any positive number above
+        </div>
+        
+        <div class="conversion-reference">
+            <div class="reference-title">⚖️ Common Weight & Mass Conversions</div>
+            <div class="reference-grid">
+                <div class="reference-group">
+                    <h4>Pounds ↔ Kilograms</h4>
+                    <div class="reference-item">
+                        <span class="reference-value">1 pound</span>
+                        <span class="reference-unit">= 0.454 kg</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">1 kg</span>
+                        <span class="reference-unit">= 2.205 lb</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">10 pounds</span>
+                        <span class="reference-unit">= 4.536 kg</span>
+                    </div>
+                </div>
+                
+                <div class="reference-group">
+                    <h4>Ounces ↔ Grams</h4>
+                    <div class="reference-item">
+                        <span class="reference-value">1 ounce</span>
+                        <span class="reference-unit">= 28.35 g</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">1 gram</span>
+                        <span class="reference-unit">= 0.035 oz</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">16 ounces</span>
+                        <span class="reference-unit">= 453.6 g</span>
+                    </div>
+                </div>
+                
+                <div class="reference-group">
+                    <h4>Stone ↔ Kilograms</h4>
+                    <div class="reference-item">
+                        <span class="reference-value">1 stone</span>
+                        <span class="reference-unit">= 6.35 kg</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">1 kg</span>
+                        <span class="reference-unit">= 0.157 st</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">10 stone</span>
+                        <span class="reference-unit">= 63.5 kg</span>
+                    </div>
+                </div>
+                
+                <div class="reference-group">
+                    <h4>Tons ↔ Kilograms</h4>
+                    <div class="reference-item">
+                        <span class="reference-value">1 metric ton</span>
+                        <span class="reference-unit">= 1000 kg</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">1 US ton</span>
+                        <span class="reference-unit">= 907.2 kg</span>
+                    </div>
+                    <div class="reference-item">
+                        <span class="reference-value">1 metric ton</span>
+                        <span class="reference-unit">= 1.102 US tons</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const weightInput = document.getElementById('weight');
+        const resultDiv = document.getElementById('result');
+        const formulaDiv = document.getElementById('formula');
+        const fromUnitSelect = document.getElementById('fromUnit');
+        const toUnitSelect = document.getElementById('toUnit');
+
+        // Conversion factors to grams (base unit)
+        const CONVERSION_FACTORS = {
+            // Metric units
+            'mg': 0.001,      // milligrams to grams
+            'g': 1,           // grams (base unit)
+            'kg': 1000,       // kilograms to grams
+            't': 1000000,     // metric tons to grams
+            
+            // Imperial units
+            'oz': 28.3495,    // ounces to grams
+            'lb': 453.592,    // pounds to grams
+            'st': 6350.29,    // stone to grams
+            'ton': 907185     // US tons to grams
+        };
+
+        // Unit display names
+        const UNIT_NAMES = {
+            'mg': 'milligrams',
+            'g': 'grams',
+            'kg': 'kilograms',
+            't': 'metric tons',
+            'oz': 'ounces',
+            'lb': 'pounds',
+            'st': 'stone',
+            'ton': 'US tons'
+        };
+
+        // Unit symbols
+        const UNIT_SYMBOLS = {
+            'mg': 'mg',
+            'g': 'g',
+            'kg': 'kg',
+            't': 't',
+            'oz': 'oz',
+            'lb': 'lb',
+            'st': 'st',
+            'ton': 'ton'
+        };
+
+        function convertWeight() {
+            const value = parseFloat(weightInput.value);
+            const fromUnit = fromUnitSelect.value;
+            const toUnit = toUnitSelect.value;
+            
+            if (isNaN(value) || value < 0) {
+                showError('Please enter a valid positive number');
+                return;
+            }
+            
+            if (fromUnit === toUnit) {
+                showError('Please select different units to convert between');
+                return;
+            }
+            
+            // Convert to grams first, then to target unit
+            const grams = value * CONVERSION_FACTORS[fromUnit];
+            const result = grams / CONVERSION_FACTORS[toUnit];
+            const formattedResult = formatResult(result);
+            
+            resultDiv.innerHTML = `
+                <strong>${formatResult(value)} ${UNIT_SYMBOLS[fromUnit]}</strong>
+                <span class="conversion-arrow">→</span>
+                <strong>${formattedResult} ${UNIT_SYMBOLS[toUnit]}</strong>
+            `;
+            
+            const conversionFactor = CONVERSION_FACTORS[fromUnit] / CONVERSION_FACTORS[toUnit];
+            formulaDiv.textContent = `Formula: ${fromUnit} × ${conversionFactor.toFixed(6)} = ${toUnit}`;
+        }
+
+        function swapUnits() {
+            const fromValue = fromUnitSelect.value;
+            const toValue = toUnitSelect.value;
+            
+            fromUnitSelect.value = toValue;
+            toUnitSelect.value = fromValue;
+            
+            // Auto-convert if there's a value
+            if (weightInput.value) {
+                convertWeight();
+            }
+        }
+
+        function formatResult(number) {
+            // Round to 6 decimal places and remove trailing zeros
+            return parseFloat(number.toFixed(6)).toString();
+        }
+
+        function showError(message) {
+            resultDiv.innerHTML = `<span style="color: #e74c3c;">⚠️ ${message}</span>`;
+            formulaDiv.textContent = `💡 Tip: Enter any positive number above`;
+        }
+
+        // Allow Enter key to trigger conversion
+        weightInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                convertWeight();
+            }
+        });
+
+        // Real-time validation
+        weightInput.addEventListener('input', function() {
+            const value = this.value;
+            if (value && (isNaN(parseFloat(value)) || parseFloat(value) < 0)) {
+                this.style.borderColor = '#e74c3c';
+            } else {
+                this.style.borderColor = '#ddd';
+            }
+        });
+
+        // Auto-convert when units change
+        fromUnitSelect.addEventListener('change', function() {
+            if (weightInput.value) {
+                convertWeight();
+            }
+        });
+
+        toUnitSelect.addEventListener('change', function() {
+            if (weightInput.value) {
+                convertWeight();
+            }
+        });
+    </script>
+</body>
+</html>
